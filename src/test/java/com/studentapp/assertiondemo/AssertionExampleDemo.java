@@ -2,10 +2,14 @@ package com.studentapp.assertiondemo;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
+import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.Matchers.*;
 
 
 public class AssertionExampleDemo {
@@ -27,18 +31,25 @@ public class AssertionExampleDemo {
     @Test
     public void test001() {
 
+        response.body("limit", equalTo(10));
+
     }
 
     // 2) Verify that the products of total is = 51957
     @Test
     public void test002() {
 
+        response.body("total", equalTo(51957));
 
     }
 
+    
+    //Homework
     // 3) Check the Name 'Duracell - AA Batteries (8-Pack)' is available in List of product's name
     @Test
     public void test003() {
+        response.body("data.name", hasItem("Duracell - AA Batteries (8-Pack)"));
+        response.body("data[2].name", equalTo("Duracell - AA Batteries (8-Pack)"));
 
     }
 
@@ -46,23 +57,31 @@ public class AssertionExampleDemo {
     @Test
     public void test004() {
 
-
+        response.body("data.name", hasItem("Energizer - MAX Batteries AA (4-Pack)"));
+        response.body("data[3].name", equalTo("Energizer - MAX Batteries AA (4-Pack)"));
     }
 
     // 5) Verify the 'name' field inside first categories map for the first data (Checking Values inside Map using hasKey(entityType))
     @Test
     public void test005() {
 
+        response.body("data[0].categories[0]", hasKey("name"));
+
     }
 
     // 6) Check entry 'manufacturer = Energizer' is inside map of product name is 'Energizer - N Cell E90 Batteries (2-Pack)'
     @Test
     public void test006() {
+
+        response.body("data.findAll{it.name == 'Energizer - N Cell E90 Batteries (2-Pack)'}", Matchers.hasItem(hasEntry("manufacturer","Energizer")));
     }
 
     // 7) Checking multiple values in the same statement
     @Test
     public void test007() {
+
+        response.body("total", Matchers.equalTo(51957))
+                .body("data.name", Matchers.hasItem("Duracell - D Batteries (4-Pack)"));
 
     }
 
@@ -70,6 +89,10 @@ public class AssertionExampleDemo {
     @Test
     public void test008() {
 
+        response.body("limit", equalTo(10))
+                .body("limit", lessThan(15))
+                .body("limit", greaterThan(5))
+                .body("limit", greaterThanOrEqualTo(10));
 
     }
 }
